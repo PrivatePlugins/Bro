@@ -8,11 +8,11 @@ using SDG.Unturned;
 using System;
 using UnityEngine;
 
-namespace DeathManager
+namespace DM
 {
-    public class DeathManager : RocketPlugin<Configuration>
+    public class DM : RocketPlugin<Configuration>
     {
-        public static DeathManager Instance;
+        public static DM Instance;
 
         public override TranslationList DefaultTranslations
         {
@@ -21,8 +21,8 @@ namespace DeathManager
                 return new TranslationList()
                 {
                     {"gun","{0} [GUN] {2} {1}"},
-                    {"kill","ADMIN [KILL] {0}"},
-                    {"null","[NULL] {0}"},
+                    {"kill","[KILL] {0}"},
+                    {"null","[?] {0}"},
                     {"food","[FOOD] {0}"},
                     {"arena","[ARENA] {0}"},
                     {"shred","[SHRED] {0}"},
@@ -33,12 +33,12 @@ namespace DeathManager
                     {"breath","[BREATH] {0}"},
                     {"zombie","[ZOMBIE] {0}"},
                     {"animal","[ANIMAL] {0}"},
-                    {"grenade","??? [EXPLOSION] {0}"},
+                    {"grenade","[EXPLOSION] {0}"},
                     {"vehicle","[VEHICLE] {0}"},
                     {"suicide","[SUICIDE] {0}"},
                     {"burning","[BURNING] {0}"},
-                    {"headshot","+ [HEADSHOT]" },
-                    {"landmine","??? [LANDMINE] {0}"},
+                    {"headshot","[HEADSHOT]" },
+                    {"landmine","[LANDMINE] {0}"},
                     {"roadkill","{0} [ROADKILL] {1}"},
                     {"bleeding","[BLEEDING] {0}"},
                     {"freezing","[FREEZING] {0}"},
@@ -53,23 +53,8 @@ namespace DeathManager
             if (Instance.Configuration.Instance.Enabled)
             {
                 UnturnedPlayerEvents.OnPlayerDeath += OnPlayerDeath;
-                Logger.LogWarning("The plugin has been Loaded!");
-                if (Instance.Configuration.Instance.ShowErrorMessages)
-                {
-                    Logger.LogWarning("| Show error messages : True                          |");
-                }
-                else
-                {
-                    Logger.LogWarning("| Show error messages : False                         |");
-                }
-                if (Instance.Configuration.Instance.ShowSuicideMessages)
-                {
-                    Logger.LogWarning("| Show suicide messages : True                        |");
-                }
-                else
-                {
-                    Logger.LogWarning("| Show suicide messages : False                       |");
-                }
+                Logger.LogWarning("[DM] Loading...");
+               
             }
         }
 
@@ -85,13 +70,13 @@ namespace DeathManager
         {
             UnturnedPlayer killer = UnturnedPlayer.FromCSteamID(murderer);
 
-            string death = cause.ToString();
+            string reason = cause.ToString();
             string headshot = string.Empty;
             if (Instance.Configuration.Instance.ShowHeadshotMessages) { headshot = Instance.Translations.Instance.Translate("headshot"); }
 
             try
             {
-                switch (death)
+                switch (reason)
                 {
                     case "BLEEDING":
                         UnturnedChat.Say(Translate("bleeding", player.DisplayName), UnturnedChat.GetColorFromName(Configuration.Instance.DeathMessagesColor, Color.green));
@@ -171,14 +156,11 @@ namespace DeathManager
                         break;
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                if (Instance.Configuration.Instance.ShowErrorMessages)
-                {
-                    Logger.LogError("Error: Could not find <cause.Death>");
-                    Logger.LogError("Description: " + exc);
-                }
-                UnturnedChat.Say(Translate("null", player.DisplayName), UnturnedChat.GetColorFromName(Configuration.Instance.DeathMessagesColor, Color.green));
+               
+                    Logger.LogError("[DM]: " + exc);
+              
             }
         }
     }
